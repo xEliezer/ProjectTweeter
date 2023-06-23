@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
+</head>
+
+<body>
+    <section class="container m-5 p-5 border rounded">
+        <h1 class="fw-bold">Home</h1>
+        <p>Welcome, <span id="name"></span></p>
+        <button id="logout" class="btn btn-dark btn-sm">⃪ Logout</button>
+
+        <!-- Create New Post -->
+        <section class="rounded p-4 pb-5 mt-4 shadow bg-light">
+            <input id="newtweet" class="form-control" type="text" placeholder="What's happening?">
+            <button id="newtweet_btn" class="btn btn-primary btn-sm float-end mt-2">Tweet</button>
+        </section>
+
+        <!-- News Feed -->
+
+        <section id="tweets"></section>
+
+    </section>
+    <script>
+        const endpoint = "http://localhost/phpdemo/backend/";
+
+        try {
+            const newTweetButton = document.querySelector("#newtweet_btn");
+            newTweetButton.addEventListener("click", newTweet);
+        } catch (e) { }
+
+        function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(";").shift();
+            }
+
+            function getUser() {
+                fetch(endpoint + "getuser.php?id=" + getCookie("user_id"))
+                    .then((response) => response.json())
+                    .then((data) => {
+                        document.querySelector("#name").innerHTML =
+                            data.user.firstname + " " + data.user.lastname;
+                        console.log(data);
+                    });
+            }
+
+            function checkSession() {
+                const userIDCookie = getCookie("user_id");
+                if (userIDCookie) {
+                    window.location.replace("home.html");
+                }
+            }
+
+            function checkLoggedInStatus() {
+                const userIDCookie = getCookie("user_id");
+                console.log(userIDCookie);
+                if (!userIDCookie) {
+                    window.location.replace("login.html");
+                }
+            }
+
+        // Post Functions
+        function newTweet() {
+            const postTweet = document.querySelector("#newtweet").value;
+            fetch(endpoint + "createtweet.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    content: postTweet,
+                    user_id: getCookie("user_id"),
+                    user_id: getCookie("user_id"),
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    document.querySelector("#newtweet").value = "";
+                    getPosts();
+                });
+        }
+
+        function getTweet() {
+            fetch(endpoint + "gettweets.php")
+                .then((response) => response.json())
+                .then((data) => {
+                    let postHTML = "";
+                    data.forEach((tweets) => {
+                        postHTML += `
+            <div class="card mt-4">
+            <div class="card-body">
+              <p class="fw-bold">${tweets.firstname} ${tweets.lastname}</p>
+              <p>${tweets.date_tweeted}</p>
+              <p>${tweets.content}</p>
+            </div>
+          </div>
+            `;
+                    });
+                    document.querySelector("#tweets").innerHTML = postHTML;
+                });
+        }
+
+        try {
+            const logoutButton = document.querySelector("#logout");
+            logoutButton.addEventListener("click", logout);
+        } catch (e) { }
+
+        function logout() {
+            fetch(endpoint + "logout.php")
+                .then((response) => response.json())
+                .then((data) => {
+                    alert(data.message);
+
+                    // Clear session cookies
+                    document.cookie = `user_id=''; expires=Thu, 18 Dec 1970 12:00:00 GMT`;
+
+                    window.location.replace("login.html");
+                });
+        }
+
+        function checkSession() {
+                const userIDCookie = getCookie("user_id");
+                if (userIDCookie) {
+                    window.location.replace("home.html");
+                }
+            }
+    </script>
+    <script>
+        checkLoggedInStatus();
+        getUser();
+        getPosts();
+    </script>
+</body>
+
+</html>
