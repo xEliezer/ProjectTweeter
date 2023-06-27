@@ -1,8 +1,8 @@
 <?php
-// Include the database configuration file
+
 include 'config.php';
 
-// Check if the form is submitted
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get the tweet ID and user ID from the form
     $tweetId = $_POST['tweet_id'];

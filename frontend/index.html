@@ -42,21 +42,21 @@
         } catch (e) { }
 
 
-        // function getCookie(name) {
-        //     const value = `; ${document.cookie}`;
-        //     const parts = value.split(`; ${name}=`);
-        //     if (parts.length === 2) return parts.pop().split(";").shift();
-        // }
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
 
-        // function getUser() {
-        //     fetch(endpoint + "getuser.php?id=" + getCookie("user_id"))
-        //         .then((response) => response.json())
-        //         .then((data) => {
-        //             document.querySelector("#name").innerHTML =
-        //                 data.user.firstname + " " + data.user.lastname;
-        //             console.log(data);
-        //         });
-        // }
+        function getUser() {
+            fetch(endpoint + "getuser.php?id=" + getCookie("user_id"))
+                .then((response) => response.json())
+                .then((data) => {
+                    document.querySelector("#name").innerHTML =
+                        data.user.firstname + " " + data.user.lastname;
+                    console.log(data);
+                });
+        }
 
         function checkLoggedInStatus() {
             const userIDCookie = getCookie("user_id");
@@ -122,7 +122,7 @@
     </script>
     <script>
         checkLoggedInStatus();
-        // getUser();
+        getUser();
         getTweet();
     </script>
 </body>
